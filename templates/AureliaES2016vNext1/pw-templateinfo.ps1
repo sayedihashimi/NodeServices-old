@@ -13,11 +13,12 @@ $templateInfo = New-Object -TypeName psobject -Property @{
             Push-Location
             if(-not ([string]::IsNullOrEmpty($dest)) -and (test-path $dest) ){
                 Set-Location $dest
-                $7zippath = 'M:\temp\pecan-waffle\7z1514-extra\7za.exe'
+                # $7zippath = 'C:\temp\pecan-waffle\7z1514-extra\7za.exe'
+                $7zippath = (Get-7zipExe)
                 $filetoextract = (Join-Path $dest 'n-modules.7z')
                 if( -not ([string]::IsNullOrWhiteSpace($filetoextract)) -and (Test-Path $filetoextract) ){
-                    Invoke-CommandString -command $7zippath -commandArgs @('x','-t7z',$filetoextract,('-o{0}' -f (Split-Path $dest -Leaf)))
-                    #Remove-Item $filetoextract
+                    Invoke-CommandString -command $7zippath -commandArgs @('x','-t7z',$filetoextract)
+                    Remove-Item $filetoextract
                 }
                 <# 
                 call npm install - this took about 10 min to complete

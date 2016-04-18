@@ -15,6 +15,7 @@ namespace NodeServices {
 
     public class NodeVsWizard : ProjectWizard {
         public NodeVsWizard() : base() {
+            DeletePecanWaffleModuleFromUsersFolder();
             ExtensionInstallDir = (new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName);
             Properties["ExtensionInstallDir"] = ExtensionInstallDir;
         }
@@ -41,6 +42,20 @@ namespace NodeServices {
             }
         }
 
+
+        // TODO: Improve this
+        private void DeletePecanWaffleModuleFromUsersFolder() {
+            string expectedPath = @"%userprofile%\Documents\WindowsPowerShell\Modules\pecan-waffle";
+            expectedPath = System.Environment.ExpandEnvironmentVariables(expectedPath);
+            if (Directory.Exists(expectedPath)) {
+                Directory.Delete(expectedPath, true);
+            }
+
+            expectedPath = Environment.ExpandEnvironmentVariables(@"%userprofile%\Documents\WindowsPowerShell\Modules\nuget-powershell");
+            if (Directory.Exists(expectedPath)) {
+                Directory.Delete(expectedPath, true);
+            }
+        }
         private void EnsurePecanWaffleExtracted() {
             if (!Directory.Exists(PecanWaffleLocalModulePath)) {
                 var swDir = new DirectoryInfo(ExtensionInstallDir);
