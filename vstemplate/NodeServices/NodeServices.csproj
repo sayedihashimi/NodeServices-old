@@ -48,7 +48,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -58,8 +60,16 @@
     <Content Include="stylesheet.css" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="LigerShark.FileReplacer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\file-replacer.0.4.5-beta\lib\dotnet\LigerShark.FileReplacer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <!--<Reference Include="PecanWaffle, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\pecan-waffle\vs-src\PecanWaffle\bin\Debug\PecanWaffle.dll</HintPath>
+    </Reference>-->
     <Reference Include="PecanWaffle, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\pecan-waffle.0.0.12-beta\lib\PecanWaffle.dll</HintPath>
+      <HintPath>..\packages\pecan-waffle.0.0.13-beta\lib\PecanWaffle.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -119,22 +129,6 @@
       <VSIXSourceItem Include="@(_pkgsToIncludeInVsix)" />
     </ItemGroup>
   </Target>
-  <ItemGroup>
-    <pwScript Include="$(MSBuildThisFileDirectory)..\packages\pecan-waffle*\tools\pecan-add-template-to-vsix.ps1" />
-  </ItemGroup>
-  <PropertyGroup>
-    <PowerShellExe Condition=" '$(PowerShellExe)'=='' ">$(WINDIR)\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
-    <pwScriptPath Condition=" '$(pwScriptPath)'=='' ">@(pwScript->'%(FullPath)')</pwScriptPath>
-    <pwInstallBranch Condition=" '$(pwInstallBranch)'=='' ">dev</pwInstallBranch>
-    <pwVsixFilePath Condition=" '$(pwVsixFilePath)'=='' and '$([System.IO.Path]::IsPathRooted( $(TargetVsixContainer) ))'=='false' ">$([System.IO.Path]::GetFullPath( $(MSBuildThisFileDirectory)$(TargetVsixContainer) ))</pwVsixFilePath>
-    <pwVsixFilePath Condition=" '$(pwVsixFilePath)'=='' and '$([System.IO.Path]::IsPathRooted( $(TargetVsixContainer) ))'=='true' ">$([System.IO.Path]::GetFullPath( $(TargetVsixContainer) ))</pwVsixFilePath>
-    <pwTemplateRelDir Condition=" '$(pwTemplateRelDir)'=='' ">templates</pwTemplateRelDir>
-    <pwTemplateZipRelDir Condition=" '$(pwTemplateZipRelDir)'=='' ">Output\ProjectTemplates\CSharp\Web\NodeServices\</pwTemplateZipRelDir>
-    <pwVerbose>true</pwVerbose>
-    <pwTemplateExtraArgs Condition=" '$(PWVerbose)'=='true' ">$(pwTemplateExtraArgs) -verbose</pwTemplateExtraArgs>
-    <pwTemplateRoot Condition=" ''==''">$(MSBuildThisFileDirectory)..\..\templates\</pwTemplateRoot>
-    <!--<pwTemplateFilePath Condition=" '$(pwTemplateFilePath)'=='' ">$(MSBuildThisFileDirectory)templates\pw-templateinfo.ps1</pwTemplateFilePath>-->
-  </PropertyGroup>
   <!--<ItemGroup>
     <pwTemplateFiles Include="$(MSBuildThisFileDirectory)..\..\templates\**\pw-templateinfo.ps1"/>
   </ItemGroup>-->
@@ -144,6 +138,23 @@
     'C:\Data\mycode\JumpStreetMobile\JumpStreetMobileVs\templates\pw-templateinfo.ps1' 
     'C:\Data\mycode\JumpStreetMobile\JumpStreetMobileVs\bin\Debug\JumpStreetMobile.vsix' 'templates' -Verbose }"
     -->
+    <ItemGroup>
+      <pwScript Include="$(MSBuildThisFileDirectory)..\packages\pecan-waffle*\tools\pecan-add-template-to-vsix.ps1" />
+    </ItemGroup>
+    <PropertyGroup>
+      <PowerShellExe Condition=" '$(PowerShellExe)'=='' ">$(WINDIR)\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
+      <pwScriptPath Condition=" '$(pwScriptPath)'=='' ">@(pwScript->'%(FullPath)')</pwScriptPath>
+      <pwInstallBranch Condition=" '$(pwInstallBranch)'=='' ">dev</pwInstallBranch>
+      <pwVsixFilePath Condition=" '$(pwVsixFilePath)'=='' and '$([System.IO.Path]::IsPathRooted( $(TargetVsixContainer) ))'=='false' ">$([System.IO.Path]::GetFullPath( $(MSBuildThisFileDirectory)$(TargetVsixContainer) ))</pwVsixFilePath>
+      <pwVsixFilePath Condition=" '$(pwVsixFilePath)'=='' and '$([System.IO.Path]::IsPathRooted( $(TargetVsixContainer) ))'=='true' ">$([System.IO.Path]::GetFullPath( $(TargetVsixContainer) ))</pwVsixFilePath>
+      <pwTemplateRelDir Condition=" '$(pwTemplateRelDir)'=='' ">templates</pwTemplateRelDir>
+      <pwTemplateZipRelDir Condition=" '$(pwTemplateZipRelDir)'=='' ">Output\ProjectTemplates\CSharp\Web\NodeServices\</pwTemplateZipRelDir>
+      <pwVerbose>true</pwVerbose>
+      <pwTemplateExtraArgs Condition=" '$(PWVerbose)'=='true' ">$(pwTemplateExtraArgs) -verbose</pwTemplateExtraArgs>
+      <pwTemplateRoot Condition=" ''==''">$(MSBuildThisFileDirectory)..\..\templates\</pwTemplateRoot>
+      <!--<pwTemplateFilePath Condition=" '$(pwTemplateFilePath)'=='' ">$(MSBuildThisFileDirectory)templates\pw-templateinfo.ps1</pwTemplateFilePath>-->
+    </PropertyGroup>
+    <Error Text="pwScriptPath not found at [$(pwScriptPath)]" Condition=" !Exists( '$(pwScriptPath)' ) " />
     <PropertyGroup>
       <!--<pwTemplateFilePath>%(pwTemplateFiles.FullPath)</pwTemplateFilePath>-->
       <psCommand>$(PowerShellExe) -noprofile -NonInteractive -executionpolicy Unrestricted -command "&amp; { $(pwScriptPath) '$(pwInstallBranch)' '$(pwTemplateRoot)' '$(pwVsixFilePath)' '$(pwTemplateRelDir)' '$(pwTemplateZipRelDir)' $(pwTemplateExtraArgs)} "</psCommand>

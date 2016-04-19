@@ -17,7 +17,7 @@ $templateInfo = New-Object -TypeName psobject -Property @{
                 $7zippath = (Get-7zipExe)
                 $filetoextract = (Join-Path $dest 'n-modules.7z')
                 if( -not ([string]::IsNullOrWhiteSpace($filetoextract)) -and (Test-Path $filetoextract) ){
-                    Invoke-CommandString -command $7zippath -commandArgs @('x','-t7z',$filetoextract)
+                    Invoke-CommandString -command $7zippath -commandArgs @('x','n-modules.7z','-bd','-so',"-w$dest")
                     Remove-Item $filetoextract
                 }
                 <# 
