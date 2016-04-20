@@ -117,12 +117,21 @@
     <IncludePecanWaffleNuGetPkgInVsix Condition=" '$(IncludePecanWaffleNuGetPkgInVsix)'=='' ">false</IncludePecanWaffleNuGetPkgInVsix>
     <PackagesDir Condition=" '$(PackagesDir)'=='' ">..\packages\</PackagesDir>
   </PropertyGroup>
-  <Target Name="IncludePecanWaffleInVsix" BeforeTargets="CoreCompile" Condition=" '$(IncludePecanWaffleNuGetPkgInVsix)'=='true' ">
+  <Target Name="IncludePecanWaffleInVsix" BeforeTargets="CoreCompile" Condition=" '$(IncludePecanWaffleNuGetPkgInVsix)'=='true' ">  
     <ItemGroup>
-      <_pkgsToIncludeInVsix Include="$(PackagesDir)pecan-waffle*\pecan-waffle*.nupkg" />
-      <_pkgsToIncludeInVsix Include="$(PackagesDir)file-replacer*\file-replacer*.nupkg" />
-      <_pkgsToIncludeInVsix Include="$(PackagesDir)nuget-powershell*\nuget-powershell*.nupkg" />
+      <pwNuGetPackage Include="$(PackagesDir)pecan-waffle*\pecan-waffle*.nupkg"/>
+      <frNuGetPackage Include="$(PackagesDir)file-replacer*\file-replacer*.nupkg"/>
+      <npNugetPackage Include="$(PackagesDir)nuget-powershell*\nuget-powershell*.nupkg"/>
+      
+      <_pkgsToIncludeInVsix Include="$(pwNuGetPackage)" />
+      <_pkgsToIncludeInVsix Include="$(frNuGetPackage)" />
+      <_pkgsToIncludeInVsix Include="$(npNugetPackage)" />
     </ItemGroup>
+    
+    <Error Condition="!Exists('@(pwNuGetPackage)')" Text="Did not find pecan-waffle nuget package at [@(pwNuGetPackage)]" />
+    <Error Condition="!Exists('@(frNuGetPackage)')" Text="Did not find file-replacer nuget package at [@(frNuGetPackage)]" />
+    <Error Condition="!Exists('@(npNugetPackage)')" Text="Did not find nuget-powershell nuget package at [@(npNugetPackage)]" />
+    
     <Message Text="Adding nuget packages to vsix [@(_pkgsToIncludeInVsix)]" />
     <!-- add the packages to -->
     <ItemGroup>

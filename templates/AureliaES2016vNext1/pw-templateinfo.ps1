@@ -2,10 +2,6 @@
 param()
 
 $logfilepath = $env:PecanWaffleLogFilePath
-$loggingenabled = $false
-if([string]::Equals('true',$env:PecanWaffleVerbose,[System.StringComparison]::OrdinalIgnoreCase)){
-    $loggingenabled = $true
-}
 
 $templateInfo = New-Object -TypeName psobject -Property @{
     Name = 'AureliaES2016'
@@ -44,7 +40,7 @@ $templateInfo = New-Object -TypeName psobject -Property @{
                     }
 
                     Invoke-CommandString -command $7zippath -commandArgs $cmdargs -ignoreErrors $true
-                    # Remove-Item $filetoextract
+                    Remove-Item $filetoextract
                 }
                 else{
                     throw ('Did not find node modules zip at [{0}]' -f $filetoextract)
