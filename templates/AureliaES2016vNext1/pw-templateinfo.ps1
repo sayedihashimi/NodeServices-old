@@ -1,24 +1,53 @@
 ﻿[cmdletbinding()]
 param()
 
+$logfilepath = $env:PecanWaffleLogFilePath
+$loggingenabled = $false
+if([string]::Equals('true',$env:PecanWaffleVerbose,[System.StringComparison]::OrdinalIgnoreCase)){
+    $loggingenabled = $true
+}
+
 $templateInfo = New-Object -TypeName psobject -Property @{
     Name = 'AureliaES2016'
     Type = 'ProjectTemplate'
     DefaultProjectName = 'AngularSpaApplication'
     AfterInstall = {
         Update-VisualStuidoProjects -slnRoot ($SolutionRoot)
-        $dest = $properties['FinalDestPath']
+        $projdest = $properties['FinalDestPath']
 
         try{
             Push-Location
-            if(-not ([string]::IsNullOrEmpty($dest)) -and (test-path $dest) ){
-                Set-Location $dest
+            if(-not ([string]::IsNullOrEmpty($projdest)) -and (test-path $projdest) ){
+                Set-Location $projdest
+
                 # $7zippath = 'C:\temp\pecan-waffle\7z1514-extra\7za.exe'
                 $7zippath = (Get-7zipExe)
-                $filetoextract = (Join-Path $dest 'n-modules.7z')
+                $filetoextract = (Join-Path $projdest 'n-modules.7z')
+
+                if(-not [string]::IsNullOrWhiteSpace($logfilepath)){
+                $logmsg = @'
+ pwd=[{0}]
+ projdest=[{1}]
+ filetoextract=[{2}]
+'@
+
+                [System.IO.File]::AppendAllText($logfilepath, ($logmsg -f $pwd,$projdest,$filetoextract))
+                }
+
                 if( -not ([string]::IsNullOrWhiteSpace($filetoextract)) -and (Test-Path $filetoextract) ){
-                    Invoke-CommandString -command $7zippath -commandArgs @('x','n-modules.7z','-bd','-so',"-w$dest")
-                    Remove-Item $filetoextract
+                    $cmdargs = @('-bd','x','n-modules.7z',"-wnode_modules")
+
+                    $cmdargsstr = "`r`n{0} {1}" -f $7zippath,($cmdargs -join ' ')
+
+                    if(-not [string]::IsNullOrWhiteSpace($logfilepath)){
+                        [System.IO.File]::AppendAllText($logfilepath, $cmdargsstr)
+                    }
+
+                    Invoke-CommandString -command $7zippath -commandArgs $cmdargs -ignoreErrors $true
+                    # Remove-Item $filetoextract
+                }
+                else{
+                    throw ('Did not find node modules zip at [{0}]' -f $filetoextract)
                 }
                 <# 
                 call npm install - this took about 10 min to complete
@@ -28,12 +57,15 @@ $templateInfo = New-Object -TypeName psobject -Property @{
             }
             else{
                 'destPath is empty' | Write-Output
+
+                if(-not [string]::IsNullOrWhiteSpace($logfilepath)){
+                    [System.IO.File]::AppendAllText('c:\temp\pean-waffle\log.txt','destPath is empty')
+                }
             }
         }
         finally{
             Pop-Location
-        }
-        
+        }        
     }
 }
 
