@@ -141,7 +141,7 @@
   <!--<ItemGroup>
     <pwTemplateFiles Include="$(MSBuildThisFileDirectory)..\..\templates\**\pw-templateinfo.ps1"/>
   </ItemGroup>-->
-  <Target Name="AddPecanFilesToVsix" DependsOnTargets="CreateVsixContainer" AfterTargets="CreateVsixContainer">
+  <Target Name="AddPecanFilesToVsix" BeforeTargets="Build;CreateVsixContainer">
     <!--
     powershell.exe –command "& { C:\Data\mycode\pecan-waffle\pecan-add-template-to-vsix.ps1 'dev' 'aspnet5-webapi' 
     'C:\Data\mycode\JumpStreetMobile\JumpStreetMobileVs\templates\pw-templateinfo.ps1' 
@@ -161,16 +161,29 @@
       <pwVerbose>true</pwVerbose>
       <pwTemplateExtraArgs Condition=" '$(PWVerbose)'=='true' ">$(pwTemplateExtraArgs) -verbose</pwTemplateExtraArgs>
       <pwTemplateRoot Condition=" ''==''">$(MSBuildThisFileDirectory)..\..\templates\</pwTemplateRoot>
-      <!--<pwTemplateFilePath Condition=" '$(pwTemplateFilePath)'=='' ">$(MSBuildThisFileDirectory)templates\pw-templateinfo.ps1</pwTemplateFilePath>-->
+      <pwOutputDirectory>$(IntermediateOutputPath)templatesTemp</pwOutputDirectory>
+      <!--
+      <pwTemplateFilePath Condition=" '$(pwTemplateFilePath)'=='' ">$(MSBuildThisFileDirectory)templates\pw-templateinfo.ps1</pwTemplateFilePath>-->
     </PropertyGroup>
     <Error Text="pwScriptPath not found at [$(pwScriptPath)]" Condition=" !Exists( '$(pwScriptPath)' ) " />
     <PropertyGroup>
       <!--<pwTemplateFilePath>%(pwTemplateFiles.FullPath)</pwTemplateFilePath>-->
-      <psCommand>$(PowerShellExe) -noprofile -NonInteractive -executionpolicy Unrestricted -command "&amp; { $(pwScriptPath) '$(pwInstallBranch)' '$(pwTemplateRoot)' '$(pwVsixFilePath)' '$(pwTemplateRelDir)' '$(pwTemplateZipRelDir)' $(pwTemplateExtraArgs)} "</psCommand>
+      <psCommand>$(PowerShellExe) -noprofile -NonInteractive -executionpolicy Unrestricted -command "&amp; { $(pwScriptPath) '$(pwInstallBranch)' '$(pwTemplateRoot)' '$(pwVsixFilePath)' '$(pwOutputDirectory)' '$(pwTemplateZipRelDir)' $(pwTemplateExtraArgs)} "</psCommand>
     </PropertyGroup>
-    <Message Text="Adding template files to vsix with command:$(psCommand)" Importance="high" />
+    <Message Text="Adding template files to vsix with command:$(psCommand)" Importance="low" />
     <!--<Message Text="&#xD;&#xA;OutputPath: $(outputpath)&#xD;&#xA;pwScriptPath: $(pwScriptPath)&#xD;&#xA;pwTemplateFilePath: $(pwTemplateFilePath)&#xD;&#xA;pwVsixFilePath: $(pwVsixFilePath)&#xD;&#xA;pwScript: @(pwScript->'%(FullPath)')" Importance="high" />-->
 
     <Exec Command="$(psCommand)" />
+    <ItemGroup>
+      <_pwTemplateFilesForVsix Include="$(pwOutputDirectory)\**\*">
+        <VSIXSubPath>%(RecursiveDir)</VSIXSubPath>
+      </_pwTemplateFilesForVsix>
+      
+      <VSIXSourceItem Include="@(_pwTemplateFilesForVsix)">
+        <VSIXSubPath>%(_pwTemplateFilesForVsix.RecursiveDir)</VSIXSubPath>
+      </VSIXSourceItem>
+    </ItemGroup>
+    
+    <Message Text="VSIXSourceItem:%0a%0d@(VSIXSourceItem,'%0a%0d')" Importance="low" />
   </Target>
 </Project>
