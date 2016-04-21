@@ -8,6 +8,7 @@ $templateInfo = New-Object -TypeName psobject -Property @{
     Type = 'ProjectTemplate'
     DefaultProjectName = 'AngularSpaApplication'
     AfterInstall = {
+        Start-Sleep -Seconds 5
         Update-VisualStuidoProjects -slnRoot ($SolutionRoot)
         $projdest = $properties['FinalDestPath']
 

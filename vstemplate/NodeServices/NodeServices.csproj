@@ -123,9 +123,9 @@
       <frNuGetPackage Include="$(PackagesDir)file-replacer*\file-replacer*.nupkg"/>
       <npNugetPackage Include="$(PackagesDir)nuget-powershell*\nuget-powershell*.nupkg"/>
       
-      <_pkgsToIncludeInVsix Include="$(pwNuGetPackage)" />
-      <_pkgsToIncludeInVsix Include="$(frNuGetPackage)" />
-      <_pkgsToIncludeInVsix Include="$(npNugetPackage)" />
+      <_pkgsToIncludeInVsix Include="@(pwNuGetPackage)" />
+      <_pkgsToIncludeInVsix Include="@(frNuGetPackage)" />
+      <_pkgsToIncludeInVsix Include="@(npNugetPackage)" />
     </ItemGroup>
     
     <Error Condition="!Exists('@(pwNuGetPackage)')" Text="Did not find pecan-waffle nuget package at [@(pwNuGetPackage)]" />
@@ -170,6 +170,7 @@
     </PropertyGroup>
     <Message Text="Adding template files to vsix with command:$(psCommand)" Importance="high" />
     <!--<Message Text="&#xD;&#xA;OutputPath: $(outputpath)&#xD;&#xA;pwScriptPath: $(pwScriptPath)&#xD;&#xA;pwTemplateFilePath: $(pwTemplateFilePath)&#xD;&#xA;pwVsixFilePath: $(pwVsixFilePath)&#xD;&#xA;pwScript: @(pwScript->'%(FullPath)')" Importance="high" />-->
+
     <Exec Command="$(psCommand)" />
   </Target>
 </Project>
