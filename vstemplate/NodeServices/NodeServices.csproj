@@ -138,9 +138,6 @@
       <VSIXSourceItem Include="@(_pkgsToIncludeInVsix)" />
     </ItemGroup>
   </Target>
-  <!--<ItemGroup>
-    <pwTemplateFiles Include="$(MSBuildThisFileDirectory)..\..\templates\**\pw-templateinfo.ps1"/>
-  </ItemGroup>-->
   <Target Name="AddPecanFilesToVsix" BeforeTargets="Build;CreateVsixContainer">
     <!--
     powershell.exe –command "& { C:\Data\mycode\pecan-waffle\pecan-add-template-to-vsix.ps1 'dev' 'aspnet5-webapi' 
@@ -162,16 +159,12 @@
       <pwTemplateExtraArgs Condition=" '$(PWVerbose)'=='true' ">$(pwTemplateExtraArgs) -verbose</pwTemplateExtraArgs>
       <pwTemplateRoot Condition=" ''==''">$(MSBuildThisFileDirectory)..\..\templates\</pwTemplateRoot>
       <pwOutputDirectory>$(IntermediateOutputPath)templatesTemp</pwOutputDirectory>
-      <!--
-      <pwTemplateFilePath Condition=" '$(pwTemplateFilePath)'=='' ">$(MSBuildThisFileDirectory)templates\pw-templateinfo.ps1</pwTemplateFilePath>-->
     </PropertyGroup>
     <Error Text="pwScriptPath not found at [$(pwScriptPath)]" Condition=" !Exists( '$(pwScriptPath)' ) " />
     <PropertyGroup>
-      <!--<pwTemplateFilePath>%(pwTemplateFiles.FullPath)</pwTemplateFilePath>-->
       <psCommand>$(PowerShellExe) -noprofile -NonInteractive -executionpolicy Unrestricted -command "&amp; { $(pwScriptPath) '$(pwInstallBranch)' '$(pwTemplateRoot)' '$(pwVsixFilePath)' '$(pwOutputDirectory)' '$(pwTemplateZipRelDir)' $(pwTemplateExtraArgs)} "</psCommand>
     </PropertyGroup>
     <Message Text="Adding template files to vsix with command:$(psCommand)" Importance="low" />
-    <!--<Message Text="&#xD;&#xA;OutputPath: $(outputpath)&#xD;&#xA;pwScriptPath: $(pwScriptPath)&#xD;&#xA;pwTemplateFilePath: $(pwTemplateFilePath)&#xD;&#xA;pwVsixFilePath: $(pwVsixFilePath)&#xD;&#xA;pwScript: @(pwScript->'%(FullPath)')" Importance="high" />-->
 
     <Exec Command="$(psCommand)" />
     <ItemGroup>
