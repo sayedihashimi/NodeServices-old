@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\pecan-waffle-vs.0.0.14-beta\build\pecan-waffle-vs.props" Condition="Exists('..\packages\pecan-waffle-vs.0.0.14-beta\build\pecan-waffle-vs.props')" />
   <Import Project="..\packages\pecan-waffle-vs.0.0.13-beta\build\pecan-waffle-vs.props" Condition="Exists('..\packages\pecan-waffle-vs.0.0.13-beta\build\pecan-waffle-vs.props')" />
   <PropertyGroup>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
@@ -71,7 +72,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PecanWaffle, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\pecan-waffle.0.0.13-beta\lib\PecanWaffle.dll</HintPath>
+      <HintPath>..\packages\pecan-waffle.0.0.14-beta\lib\PecanWaffle.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -111,78 +112,15 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\pecan-waffle-vs.0.0.13-beta\build\pecan-waffle-vs.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\pecan-waffle-vs.0.0.13-beta\build\pecan-waffle-vs.props'))" />
-    <Error Condition="!Exists('..\packages\pecan-waffle-vs.0.0.13-beta\build\pecan-waffle-vs.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\pecan-waffle-vs.0.0.13-beta\build\pecan-waffle-vs.targets'))" />
+    <Error Condition="!Exists('..\packages\pecan-waffle-vs.0.0.14-beta\build\pecan-waffle-vs.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\pecan-waffle-vs.0.0.14-beta\build\pecan-waffle-vs.props'))" />
+    <Error Condition="!Exists('..\packages\pecan-waffle-vs.0.0.14-beta\build\pecan-waffle-vs.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\pecan-waffle-vs.0.0.14-beta\build\pecan-waffle-vs.targets'))" />
   </Target>
-  <Import Project="..\packages\pecan-waffle-vs.0.0.13-beta\build\pecan-waffle-vs.targets" Condition="Exists('..\packages\pecan-waffle-vs.0.0.13-beta\build\pecan-waffle-vs.targets')" />
+  <Import Project="..\packages\pecan-waffle-vs.0.0.14-beta\build\pecan-waffle-vs.targets" Condition="Exists('..\packages\pecan-waffle-vs.0.0.14-beta\build\pecan-waffle-vs.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-  </Target>
-  -->
-  <!--
-  <PropertyGroup>
-    <IncludePecanWaffleNuGetPkgInVsix>true</IncludePecanWaffleNuGetPkgInVsix>
-    <IncludePecanWaffleNuGetPkgInVsix Condition=" '$(IncludePecanWaffleNuGetPkgInVsix)'=='' ">false</IncludePecanWaffleNuGetPkgInVsix>
-    <PackagesDir Condition=" '$(PackagesDir)'=='' ">..\packages\</PackagesDir>
-  </PropertyGroup>
-  <Target Name="IncludePecanWaffleInVsix" BeforeTargets="CoreCompile" Condition=" '$(IncludePecanWaffleNuGetPkgInVsix)'=='true' ">  
-    <ItemGroup>
-      <pwNuGetPackage Include="$(PackagesDir)pecan-waffle*\pecan-waffle*.nupkg"/>
-      <frNuGetPackage Include="$(PackagesDir)file-replacer*\file-replacer*.nupkg"/>
-      <npNugetPackage Include="$(PackagesDir)nuget-powershell*\nuget-powershell*.nupkg"/>
-      
-      <_pkgsToIncludeInVsix Include="@(pwNuGetPackage)" />
-      <_pkgsToIncludeInVsix Include="@(frNuGetPackage)" />
-      <_pkgsToIncludeInVsix Include="@(npNugetPackage)" />
-    </ItemGroup>
-    
-    <Error Condition="!Exists('@(pwNuGetPackage)')" Text="Did not find pecan-waffle nuget package at [@(pwNuGetPackage)]" />
-    <Error Condition="!Exists('@(frNuGetPackage)')" Text="Did not find file-replacer nuget package at [@(frNuGetPackage)]" />
-    <Error Condition="!Exists('@(npNugetPackage)')" Text="Did not find nuget-powershell nuget package at [@(npNugetPackage)]" />
-    
-    <Message Text="Adding nuget packages to vsix [@(_pkgsToIncludeInVsix)]" />
-    <ItemGroup>
-      <VSIXSourceItem Include="@(_pkgsToIncludeInVsix)" />
-    </ItemGroup>
-  </Target>
-  <Target Name="AddPecanFilesToVsix" BeforeTargets="Build;CreateVsixContainer">
-    <ItemGroup>
-      <pwScript Include="$(MSBuildThisFileDirectory)..\packages\pecan-waffle*\tools\pecan-add-template-to-vsix.ps1" />
-    </ItemGroup>
-    <PropertyGroup>
-      <PowerShellExe Condition=" '$(PowerShellExe)'=='' ">$(WINDIR)\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
-      <pwScriptPath Condition=" '$(pwScriptPath)'=='' ">@(pwScript->'%(FullPath)')</pwScriptPath>
-      <pwInstallBranch Condition=" '$(pwInstallBranch)'=='' ">dev</pwInstallBranch>
-      <pwVsixFilePath Condition=" '$(pwVsixFilePath)'=='' and '$([System.IO.Path]::IsPathRooted( $(TargetVsixContainer) ))'=='false' ">$([System.IO.Path]::GetFullPath( $(MSBuildThisFileDirectory)$(TargetVsixContainer) ))</pwVsixFilePath>
-      <pwVsixFilePath Condition=" '$(pwVsixFilePath)'=='' and '$([System.IO.Path]::IsPathRooted( $(TargetVsixContainer) ))'=='true' ">$([System.IO.Path]::GetFullPath( $(TargetVsixContainer) ))</pwVsixFilePath>
-      <pwTemplateRelDir Condition=" '$(pwTemplateRelDir)'=='' ">templates</pwTemplateRelDir>
-      <pwTemplateZipRelDir Condition=" '$(pwTemplateZipRelDir)'=='' ">Output\ProjectTemplates\CSharp\Web\NodeServices\</pwTemplateZipRelDir>
-      <pwVerbose>true</pwVerbose>
-      <pwTemplateExtraArgs Condition=" '$(PWVerbose)'=='true' ">$(pwTemplateExtraArgs) -verbose</pwTemplateExtraArgs>
-      <pwTemplateRoot Condition=" ''==''">$(MSBuildThisFileDirectory)..\..\templates\</pwTemplateRoot>
-      <pwOutputDirectory>$(IntermediateOutputPath)templatesTemp</pwOutputDirectory>
-    </PropertyGroup>
-    <Error Text="pwScriptPath not found at [$(pwScriptPath)]" Condition=" !Exists( '$(pwScriptPath)' ) " />
-    <PropertyGroup>
-      <psCommand>$(PowerShellExe) -noprofile -NonInteractive -executionpolicy Unrestricted -command "&amp; { $(pwScriptPath) '$(pwInstallBranch)' '$(pwTemplateRoot)' '$(pwVsixFilePath)' '$(pwOutputDirectory)' '$(pwTemplateZipRelDir)' $(pwTemplateExtraArgs)} "</psCommand>
-    </PropertyGroup>
-    <Message Text="Adding template files to vsix with command:$(psCommand)" Importance="low" />
-
-    <Exec Command="$(psCommand)" />
-    <ItemGroup>
-      <_pwTemplateFilesForVsix Include="$(pwOutputDirectory)\**\*">
-        <VSIXSubPath>%(RecursiveDir)</VSIXSubPath>
-      </_pwTemplateFilesForVsix>
-      
-      <VSIXSourceItem Include="@(_pwTemplateFilesForVsix)">
-        <VSIXSubPath>%(_pwTemplateFilesForVsix.RecursiveDir)</VSIXSubPath>
-      </VSIXSourceItem>
-    </ItemGroup>
-    
-    <Message Text="VSIXSourceItem:%0a%0d@(VSIXSourceItem,'%0a%0d')" Importance="low" />
   </Target>
   -->
 </Project>
